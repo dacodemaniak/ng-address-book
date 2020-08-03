@@ -1,0 +1,9 @@
+
+<!-- Using structure directives -->
+<ul>
+  <ng-container *ngFor="let address of addressList">
+    <app-address [address]="address"></app-address>
+  </ng-container>
+</ul>
+
+{{ addressList | json }}

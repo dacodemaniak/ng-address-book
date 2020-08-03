@@ -1,8 +1,30 @@
+import { AddressListComponent } from './core/components/address-list/address-list.component';
+import { AddAddressComponent } from './core/components/add-address/add-address.component';
+import { AddressComponent } from './core/components/address/address.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'address-list',
+    pathMatch: 'full'
+  },
+  {
+    path: 'address-list',
+    component: AddressListComponent
+  },
+  {
+    path: 'address/:id',
+    component: AddAddressComponent
+  },
+  {
+    path: '**',
+    redirectTo: 'address-list',
+    pathMatch: 'full'
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -1,4 +1,5 @@
 export interface AddressBookInterface {
+  id: number;
   lastName: string;
   firstName: string;
   phoneNumber: string;

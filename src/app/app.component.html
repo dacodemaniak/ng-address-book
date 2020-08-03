@@ -5,17 +5,6 @@
   Change title
 </button>
 
-<!-- Using structure directives -->
-<ul>
-  <ng-container *ngFor="let address of addressList">
-    <li *ngIf="address.isPublic">
-        <strong>{{ address.firstName }} {{ address.lastName }}</strong>
-    </li>
-    <li *ngIf="!address.isPublic">
-        <em>{{ address.firstName }} {{ address.lastName }}</em>
-    </li>
-  </ng-container>
-</ul>
-
-{{ addressList | json }}
+<!-- Router outlet -->
+<router-outlet></router-outlet>
 
