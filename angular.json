@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "addressBook"
+    }
+  },
+  "defaultProject": "addressBook",
+  "cli": {
+    "analytics": false
+  }
 }
