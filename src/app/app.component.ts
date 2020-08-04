@@ -48,7 +48,6 @@ export class AppComponent implements OnInit {
   }
 
   public isLoginUp(): boolean {
-    console.log('Check for url');
     return this.url && this.url === '/login';
   }
 }

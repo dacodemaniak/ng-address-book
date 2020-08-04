@@ -11,16 +11,21 @@
       class="btn btn-primary"
       *ngIf="!userService.isAuthenticated()"
       (click)="navigateToLogin()"
+      appCustomButton
+      color="red"
     >
-      Login
+
     </button>
     <button
       class="btn btn-danger"
       *ngIf="userService.isAuthenticated()"
       (click)="userService.logout()"
+      appCustomButton
+      color="pink"
+      content="{{ (userService.isAuthenticated() ? 'logout' : 'login') | upperFirstLetter: {boldize: true} }}"
     >
-      Logout
     </button>
+
   </div>
 </header>
 
