@@ -8,7 +8,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'address-list',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -18,6 +18,9 @@ const routes: Routes = [
   {
     path: 'address/:id',
     component: AddAddressComponent
+  },
+  {
+    path: 'login', loadChildren: () => import('./core/modules/user/user.module').then(m => m.UserModule)
   },
   {
     path: '**',
