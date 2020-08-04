@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 
 interface UserInterface {
@@ -20,7 +21,9 @@ export class UserService {
 
   private user: any;
 
-  constructor() { }
+  constructor(
+    private router: Router
+  ) { }
 
   public authenticate(user: UserInterface): void {
     this.user = this.userList.find(
@@ -30,6 +33,7 @@ export class UserService {
 
   public logout(): void {
     this.user = null;
+    this.router.navigate(['/']);
   }
 
   public isAuthenticated(): boolean {

@@ -11,7 +11,7 @@ import { filter, map } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   private pTitle = 'addressBook';
   private pSubTitle = 'Another beautifull address book';
-
+  public url: string;
 
 
   public constructor(
@@ -21,20 +21,13 @@ export class AppComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-
-      this.router.events.pipe(
-        filter((event) => event instanceof NavigationEnd),
-        map(() => this.route),
-        map((route) => {
-          while (route.firstChild) {
-            route = route.firstChild;
-          }
-          return route;
-        }),
-        map((route) => route.url)
-      ).subscribe((result) => {
-        console.log(result);
-      });
+    this.router.events.subscribe((result) => {
+      if (result instanceof NavigationEnd) {
+        // Only after navigation ended
+        this.url = result.urlAfterRedirects;
+        console.log('Current url : ' + result.url);
+      }
+    });
   }
 
   public changeTitle(): void {
@@ -55,6 +48,7 @@ export class AppComponent implements OnInit {
   }
 
   public isLoginUp(): boolean {
-    return true;
+    console.log('Check for url');
+    return this.url && this.url === '/login';
   }
 }
