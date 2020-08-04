@@ -1,4 +1,8 @@
-<form [formGroup]="loginFormGroup">
+<div class="form-error" [hidden]="!loginFailed">
+  Une erreur est survenue lors de l'authentification
+</div>
+
+<form [formGroup]="loginFormGroup" (ngSubmit)="doSubmit()" (ngChange)="toggleErrorMessage()">
   <div class="form-group">
     <input
       type="text"

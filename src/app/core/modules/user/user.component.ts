@@ -1,5 +1,7 @@
+import { UserService } from './services/user.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user',
@@ -10,8 +12,12 @@ export class UserComponent implements OnInit {
 
   public loginFormGroup: FormGroup;
 
+  public loginFailed = false;
+
   constructor(
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private userService: UserService,
+    private router: Router
   ) { }
 
   // Getter / Setters on form controls
@@ -19,8 +25,25 @@ export class UserComponent implements OnInit {
     return this.loginFormGroup.controls.login;
   }
 
+  public toggleErrorMessage(): void {
+    this.loginFailed = false;
+  }
+
   public get password(): AbstractControl {
     return this.loginFormGroup.controls.password;
+  }
+
+  public doSubmit(): void {
+    this.userService.authenticate(this.loginFormGroup.value);
+    if (this.userService.isAuthenticated()) {
+      // @todo Route to address list
+      this.router.navigate(['/address-list']);
+    } else {
+      // @todo clear form, toast a message, stay here
+      this.loginFormGroup.reset();
+      this.loginFailed = true;
+
+    }
   }
 
   ngOnInit(): void {

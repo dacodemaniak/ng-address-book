@@ -1,9 +1,28 @@
-<h1>{{ title | uppercase }}</h1>
-<h2>{{ subTitle }}</h2>
+<header>
+  <h1>{{ title | uppercase }}</h1>
+  <h2>{{ subTitle }}</h2>
 
-<button type="button" (click)="changeTitle()">
-  Change title
-</button>
+  <button type="button" (click)="changeTitle()">
+    Change title
+  </button>
+
+  <div class="container" [hidden]="isLoginUp()">
+    <button
+      class="btn btn-primary"
+      *ngIf="!userService.isAuthenticated()"
+      (click)="navigateToLogin()"
+    >
+      Login
+    </button>
+    <button
+      class="btn btn-danger"
+      *ngIf="userService.isAuthenticated()"
+      (click)="userService.logout()"
+    >
+      Logout
+    </button>
+  </div>
+</header>
 
 <!-- Router outlet -->
 <router-outlet></router-outlet>
