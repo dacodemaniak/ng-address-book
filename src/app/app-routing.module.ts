@@ -1,3 +1,4 @@
+import { AuthGuard } from './core/services/auth.guard';
 import { AddressListComponent } from './core/components/address-list/address-list.component';
 import { AddAddressComponent } from './core/components/add-address/add-address.component';
 import { AddressComponent } from './core/components/address/address.component';
@@ -8,7 +9,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'address-list',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -18,6 +19,11 @@ const routes: Routes = [
   {
     path: 'address/:id',
     component: AddAddressComponent
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./core/modules/user/user.module').then(m => m.UserModule),
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
