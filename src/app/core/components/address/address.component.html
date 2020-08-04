@@ -1,7 +1,6 @@
 <li>
   <div
     [ngClass]="{'public': address.isPublic, 'collection-item': true}"
-    [hidden]="!address.isPublic"
     (click)="changeLastName()"
   >
     <a [routerLink]="['..', 'address', address.id]">{{ address.lastName }} {{ address.firstName }}</a>
