@@ -1,5 +1,9 @@
+import { environment } from './../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AddressBook } from '../models/address-book';
+import { take, tap, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,14 +12,26 @@ export class AddressService {
 
   private addresses: AddressBook[];
 
-  constructor() {
+  constructor(
+    private httpClient: HttpClient
+  ) {
     this.addresses = [];
-
-    this.hydrate();
   }
 
-  public all(): AddressBook[] {
-    return this.addresses;
+  public all(): Observable<AddressBook[]> {
+    const api = `${environment.apiRoot}address`;
+
+    return this.httpClient.get<AddressBook[]>(
+      api
+    ).pipe(
+      take(1), // First and only one result
+      tap((response) => {
+        console.log(`From service : ${response}`);
+      }),
+      map((response) => {
+        return response;
+      })
+    );
   }
 
   public find(id: number): AddressBook {
@@ -44,5 +60,7 @@ export class AddressService {
 
     this.addresses.push(item);
 
+    // Persists datas in localStorage
+    localStorage.setItem('addresses', JSON.stringify(this.addresses));
   }
 }

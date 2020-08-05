@@ -5,7 +5,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators';
 
 // array in local storage for registered users
-let addresses = JSON.parse(localStorage.getItem('addressbook')) || [];
+let addresses = JSON.parse(localStorage.getItem('addresses')) || [];
 
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
