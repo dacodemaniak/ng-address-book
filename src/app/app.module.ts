@@ -1,3 +1,4 @@
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { LocalizationService } from './core/services/localization.service';
 import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
@@ -47,6 +48,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    ReactiveFormsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

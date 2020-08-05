@@ -6,11 +6,16 @@
     Go to login
   </button>
 
-  <!-- Language switcher -->
+  <!-- Language switcher
   <select [(ngModel)]="language" size="1">
     <option value="fr">Français</option>
     <option value="en">English</option>
   </select>
+ -->
+
+  <form [formGroup]="searchFormGroup">
+    <input type="text" placeholder="{{ 'address-search-label' | translate }}" formControlName="searchTerm">
+  </form>
 
   <div class="container" *ngIf="!isLoginUp()">
     <button

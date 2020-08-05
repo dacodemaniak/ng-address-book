@@ -2,8 +2,8 @@ import { environment } from './../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AddressBook } from '../models/address-book';
-import { take, tap, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { take, tap, map, catchError } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,17 +11,19 @@ import { Observable } from 'rxjs';
 export class AddressService {
 
   private addresses: AddressBook[];
+  private addressesSubject: BehaviorSubject<AddressBook[]> = new BehaviorSubject<AddressBook[]>([]);
+  public addressList = this.addressesSubject.asObservable();
 
   constructor(
     private httpClient: HttpClient
   ) {
-    this.addresses = [];
+    this.all();
   }
 
-  public all(): Observable<AddressBook[]> {
+  public all(): void {
     const api = `${environment.apiRoot}address`;
 
-    return this.httpClient.get<AddressBook[]>(
+    this.httpClient.get<AddressBook[]>(
       api
     ).pipe(
       take(1), // First and only one result
@@ -29,21 +31,38 @@ export class AddressService {
         console.log(`From service : ${response}`);
       }),
       map((response) => {
-        return response;
+        this.addressesSubject.next(response);
       })
-    );
+    ).subscribe();
   }
 
-  public find(id: number): Observable<AddressBook[]> {
+  public find(id: number): void {
     const api = `${environment.apiRoot}address/${id}`;
-    return this.httpClient.get<AddressBook>(
+    this.httpClient.get<AddressBook>(
       api
     ).pipe(
       take(1),
-      map((response) => [response])
-    );
+      map((response) => {
+        this.addressesSubject.next([response]);
+      })
+    ).subscribe();
   }
 
+  public findByName(name: string): void {
+    const api = `${environment.apiRoot}address/${name}`;
+    this.httpClient.get<AddressBook[]>(
+      api
+    ).pipe(
+      take(1),
+      tap((response) => {
+        console.log('Whats : ' + response);
+      }),
+      map((response) => {
+        console.log('From service findByName : ' + response);
+        this.addressesSubject.next(response);
+      })
+    ).subscribe();
+  }
   private hydrate(): void {
     let item: AddressBook = new AddressBook();
     item.id = 1;

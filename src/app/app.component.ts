@@ -1,10 +1,12 @@
+import { AddressService } from './core/services/address.service';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { LocalizationService } from './core/services/localization.service';
-import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from './core/modules/user/services/user.service';
 import { AddressBook } from './core/models/address-book';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { filter, map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription, Observable } from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -16,12 +18,17 @@ export class AppComponent implements OnInit, OnDestroy {
   public url: string;
   public _language: string;
   public eventRouterSubscriber: Subscription;
+  public searchFormGroup: FormGroup;
+
+  @Output() itemList: EventEmitter<Observable<AddressBook[]>> = new EventEmitter<Observable<AddressBook[]>>();
 
   public constructor(
     public userService: UserService,
     public route: ActivatedRoute,
     public router: Router,
-    private localizationService: LocalizationService
+    private localizationService: LocalizationService,
+    private formBuilder: FormBuilder,
+    private addressService: AddressService
   ) {}
 
   public get language(): string {
@@ -34,6 +41,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.localizationService.language = this._language;
   }
 
+  public get searchTerm(): AbstractControl {
+    return this.searchFormGroup.controls.searchTerm;
+  }
+
   public ngOnInit(): void {
     this.eventRouterSubscriber = this.router.events.subscribe((result) => {
       if (result instanceof NavigationEnd) {
@@ -42,6 +53,38 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log('Current url : ' + result.url);
       }
     });
+
+    // Créer l'instance du groupe searchFormGroup
+    this.searchFormGroup = this.formBuilder.group({
+      searchTerm: [
+        '',
+        Validators.compose([
+          Validators.required,
+          Validators.maxLength(20)
+        ])
+      ]
+    });
+
+    // Listen for searchTerms updates
+    this.searchTerm.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        map(() => {
+          console.log(`SearchTerm content ${this.searchTerm.value}`);
+          this.doSearch();
+        })
+      ).subscribe();
+  }
+
+  private doSearch(): void {
+    if (this.searchTerm.value.trim().length > 0) {
+      this.addressService.findByName(this.searchTerm.value);
+      console.log('Find an item from searchTerm');
+    } else {
+      console.log('Retreive all of address items');
+      this.addressService.all();
+    }
   }
 
   public ngOnDestroy(): void {
