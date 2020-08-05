@@ -12,6 +12,7 @@ import { AddAddressComponent } from './core/components/add-address/add-address.c
 import { AddressListComponent } from './core/components/address-list/address-list.component';
 import { CustomButtonDirective } from './shared/directives/custom-button.directive';
 import { UpperFirstLetterPipe } from './shared/pipes/upper-first-letter.pipe';
+import { FormsModule } from '@angular/forms';
 
 // Sets some functions to load some resources
 export function localizationInitializerFactory(
