@@ -2,18 +2,20 @@ import { LocalizationService } from './core/services/localization.service';
 import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/router';
 import { UserService } from './core/modules/user/services/user.service';
 import { AddressBook } from './core/models/address-book';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { filter, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   private pTitle = 'addressBook';
   private pSubTitle = 'Another beautifull address book';
   public url: string;
   public _language: string;
+  public eventRouterSubscriber: Subscription;
 
   public constructor(
     public userService: UserService,
@@ -33,13 +35,18 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.router.events.subscribe((result) => {
+    this.eventRouterSubscriber = this.router.events.subscribe((result) => {
       if (result instanceof NavigationEnd) {
         // Only after navigation ended
         this.url = result.urlAfterRedirects;
         console.log('Current url : ' + result.url);
       }
     });
+  }
+
+  public ngOnDestroy(): void {
+    // Unsubscribe all subscribers
+    this.eventRouterSubscriber.unsubscribe();
   }
 
   public switcher(event): void {
