@@ -2,10 +2,10 @@ import { AddressBook } from './../../core/models/address-book';
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpResponse, HttpHandler, HttpEvent, HttpInterceptor, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators';
+import { delay, mergeMap, materialize, dematerialize, filter } from 'rxjs/operators';
 
 // array in local storage for registered users
-let addresses = JSON.parse(localStorage.getItem('addressbook')) || [];
+let addresses = JSON.parse(localStorage.getItem('addresses')) || [];
 
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
@@ -23,16 +23,22 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             .pipe(dematerialize());
 
         function handleRoute(): Observable<HttpEvent<any>> {
+            const regex: RegExp = new RegExp(/\/api\/v2\/address\/\d+$/, 'g');
+            console.log(`Intercept ${url}`);
             switch (true) {
                 case url.endsWith('/api/v2/address') && method === 'GET':
                     return getAddresses();
                 case url.endsWith('/api/v2/address') && method === 'POST':
                       return addAddress();
-                case url.match('/\/api/v2/address\/\d+$/') && method === 'PUT':
+                case url.match(/\/api\/v2\/address\/\d+$/) && method === 'PUT':
                         return updateAddress();
-                case url.endsWith('/\/api/v2/address\/\d+$/') && method === 'GET':
+                case url.match(/\/api\/v2\/address\/\d+$/) && method === 'GET' :
+                    console.log('Find by id');
                     return getAddress();
-                case url.match('/\/api/v2/address\/\d+$/') && method === 'DELETE':
+                case url.match(/\/api\/v2\/address\/\w+$/) && method === 'GET' :
+                      console.log('Find by Name');
+                      return getAddressByName();
+                case url.match(/\/api\/v2\/address\/\d+$/) && method === 'DELETE':
                     return deleteAddress();
                 default:
                     // pass through any requests not handled above
@@ -72,6 +78,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return ok(address);
         }
 
+        function getAddressByName(): Observable<HttpResponse<any>> {
+          console.log('search ' + idFromUrl());
+          const address: AddressBook = addresses.filter((obj) => obj.lastName.includes(idFromUrl()));
+          return ok(address);
+        }
+
         // helper functions
 
         function ok(body?: any): Observable<HttpResponse<any>> {
@@ -83,16 +95,16 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         }
 
         function unauthorized(): Observable<never> {
-            return throwError({ status: 401, error: { message: 'Unauthorised' } });
+            return throwError({ status: 401, error: { message: 'Unauthorized' } });
         }
 
         function isLoggedIn(): boolean {
             return headers.get('Authorization') === 'Bearer fake-jwt-token';
         }
 
-        function idFromUrl(): number {
+        function idFromUrl(): any {
             const urlParts = url.split('/');
-            return +urlParts[urlParts.length - 1];
+            return urlParts[urlParts.length - 1];
         }
     }
 }

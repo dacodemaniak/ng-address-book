@@ -1,3 +1,4 @@
+import { Observable, of } from 'rxjs';
 import { AddressService } from './../../services/address.service';
 import { Component, OnInit } from '@angular/core';
 import { AddressBook } from '../../models/address-book';
@@ -8,19 +9,28 @@ import { AddressBook } from '../../models/address-book';
   styleUrls: ['./address-list.component.scss']
 })
 export class AddressListComponent implements OnInit {
-  private addresses: AddressBook[];
+  private addresses: Observable<AddressBook[]>;
 
   constructor(
     private addressService: AddressService
   ) {
-    this.addresses = [];
+    this.addresses = null;
   }
 
   ngOnInit(): void {
-    this.addresses = this.addressService.all();
+    this.addressService.addressList.subscribe((response) => {
+      console.log('Some subject response', response);
+      this.addresses = of(response);
+    });
+  }
+  /**
+   * Call api /api/v2/address/[n] to get the entry that have [n] as id and display it
+   */
+  public filter(): any {
+    this.addresses = this.addressService.find(1);
   }
 
-  public get addressList(): any[] {
+  public get addressList(): Observable<AddressBook[]> {
     return this.addresses;
   }
 

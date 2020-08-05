@@ -1,9 +1,11 @@
 
 <!-- Using structure directives -->
 <ul>
-  <ng-container *ngFor="let address of addressList">
+  <ng-container *ngFor="let address of addressList | async">
     <app-address [address]="address"></app-address>
   </ng-container>
 </ul>
 
-{{ addressList | json }}
+<button type="button" (click)="filter()">
+  Filter
+</button>

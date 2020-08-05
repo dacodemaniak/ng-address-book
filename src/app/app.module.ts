@@ -1,3 +1,5 @@
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { LocalizationService } from './core/services/localization.service';
 import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -12,7 +14,8 @@ import { AddAddressComponent } from './core/components/add-address/add-address.c
 import { AddressListComponent } from './core/components/address-list/address-list.component';
 import { CustomButtonDirective } from './shared/directives/custom-button.directive';
 import { UpperFirstLetterPipe } from './shared/pipes/upper-first-letter.pipe';
-import { FormsModule } from '@angular/forms';
+
+import { fakeBackendProvider } from './shared/services/fake-backend-interceptor';
 
 // Sets some functions to load some resources
 export function localizationInitializerFactory(
@@ -45,6 +48,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    ReactiveFormsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -65,7 +69,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
         Injector
       ],
       multi: true
-    }
+    },
+    fakeBackendProvider
   ],
   bootstrap: [AppComponent]
 })
