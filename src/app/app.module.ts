@@ -1,5 +1,9 @@
+import { LocalizationService } from './core/services/localization.service';
+import { TranslateService, TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -9,6 +13,24 @@ import { AddressListComponent } from './core/components/address-list/address-lis
 import { CustomButtonDirective } from './shared/directives/custom-button.directive';
 import { UpperFirstLetterPipe } from './shared/pipes/upper-first-letter.pipe';
 
+// Sets some functions to load some resources
+export function localizationInitializerFactory(
+  translateService: TranslateService,
+  localizationService: LocalizationService,
+  injector: Injector
+): any {
+  return (): Promise<void> => {
+    return localizationService.init(injector, translateService);
+  };
+}
+
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
+  return new TranslateHttpLoader(
+    http,
+    './assets/i18n/',
+    '.json'
+  );
+}
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,9 +42,30 @@ import { UpperFirstLetterPipe } from './shared/pipes/upper-first-letter.pipe';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [
+          HttpClient
+        ]
+      }
+    }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: localizationInitializerFactory,
+      deps: [
+        TranslateService,
+        LocalizationService,
+        Injector
+      ],
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
