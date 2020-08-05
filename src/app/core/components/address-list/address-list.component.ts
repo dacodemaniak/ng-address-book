@@ -25,7 +25,7 @@ export class AddressListComponent implements OnInit {
    * Call api /api/v2/address/[n] to get the entry that have [n] as id and display it
    */
   public filter() {
-    return null;
+    this.addresses = this.addressService.find(1);
   }
 
   public get addressList(): Observable<AddressBook[]> {

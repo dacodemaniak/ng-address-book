@@ -34,11 +34,14 @@ export class AddressService {
     );
   }
 
-  public find(id: number): AddressBook {
-    const address: AddressBook = this.addresses.find(
-      (obj) => obj.id === id
+  public find(id: number): Observable<AddressBook[]> {
+    const api = `${environment.apiRoot}address/${id}`;
+    return this.httpClient.get<AddressBook>(
+      api
+    ).pipe(
+      take(1),
+      map((response) => [response])
     );
-    return address;
   }
 
   private hydrate(): void {

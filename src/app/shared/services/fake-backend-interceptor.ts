@@ -23,16 +23,20 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             .pipe(dematerialize());
 
         function handleRoute(): Observable<HttpEvent<any>> {
+            const regex: RegExp = new RegExp(/\/api\/v2\/address\/\d+$/, 'g');
+            console.log(`Intercept ${url}`);
             switch (true) {
                 case url.endsWith('/api/v2/address') && method === 'GET':
                     return getAddresses();
                 case url.endsWith('/api/v2/address') && method === 'POST':
                       return addAddress();
-                case url.match('/\/api/v2/address\/\d+$/') && method === 'PUT':
+                case url.match(/\/api\/v2\/address\/\d+$/) && method === 'PUT':
                         return updateAddress();
-                case url.endsWith('/\/api/v2/address\/\d+$/') && method === 'GET':
+                case url.match(/\/api\/v2\/address\/\d+$/) && method === 'GET' :
                     return getAddress();
-                case url.match('/\/api/v2/address\/\d+$/') && method === 'DELETE':
+                //case url.endsWith('/api/v2/address/1') :
+                //      return getAddress();
+                case url.match(/\/api\/v2\/address\/\d+$/) && method === 'DELETE':
                     return deleteAddress();
                 default:
                     // pass through any requests not handled above
